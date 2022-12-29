@@ -32,9 +32,7 @@ class profileTakeAdapter (
 
         val upvotes = take.upvotes
         val downvotes = take.downvotes
-
-
-
+        //changing
         holder.titleText.text =take.text
 
         holder.progress.progress = (100*upvotes/(upvotes+downvotes))
