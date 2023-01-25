@@ -1,5 +1,6 @@
 package com.example.hottakesapp
 
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import okhttp3.*
@@ -123,10 +124,7 @@ fun getTakesByUser(id:String, callback : (List<Take>) -> Unit){
                 throw IOException("Unexpected code $response")
             } else {
                 val body = response.body
-                //val jsonObject = JSONObject(body).toString()
-                print(body.toString())
                 val noteArrayJsonResponse = body!!.source()
-
                 val moshi: Moshi = Moshi.Builder().build()
                 val type = Types.newParameterizedType(List::class.java, Take::class.java)
                 val adapter = moshi.adapter<List<Take>>(type)
@@ -134,6 +132,38 @@ fun getTakesByUser(id:String, callback : (List<Take>) -> Unit){
 
                 if (notes != null) {
                     callback(notes)
+                }
+            }
+        }
+    })
+}
+
+fun postUser(username:String, password:String, callback : (UserIn) -> Unit){
+    val client = OkHttpClient()
+    var jsonObject = JSONObject().apply {
+        put("username",username).put("password",password)
+    }
+    val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+    val request = Request.Builder().post(requestBody).url("http://104.197.168.4/users/add").build()
+    client.newCall(request).enqueue(object: Callback{
+        override fun onFailure(call: Call, e: IOException) {
+            e.printStackTrace()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            if(!response.isSuccessful){
+                throw IOException("Unexpected code $response")
+            }else{
+                val body = response.body
+                val moshi : Moshi = Moshi.Builder().build()
+                val adapter: JsonAdapter<UserIn> =moshi.adapter(UserIn::class.java)
+                val userBack = adapter.fromJson(body!!.source())
+
+                if (userBack != null) {
+                    callback(userBack)
+                }
+                else{
+                    print("No user returned")
                 }
             }
         }

@@ -28,17 +28,15 @@ class profileTakeAdapter (
     override fun onBindViewHolder(holder: profileTakeViewHolder, position: Int) {
         val take : Take = takelist[position]
 
-        val id :String = take._id
-
         val upvotes = take.upvotes
         val downvotes = take.downvotes
-        //changing
+
         holder.titleText.text =take.text
 
-        holder.progress.progress = (100*upvotes/(upvotes+downvotes))
-        holder.progressEnd.progress = (100-100*upvotes/(upvotes+downvotes))
-
-
+        if((upvotes+downvotes)>0) {
+            holder.progress.progress = (100 * upvotes / (upvotes + downvotes))
+            holder.progressEnd.progress = (100 - 100 * upvotes / (upvotes + downvotes))
+        }
     }
 
     override fun getItemCount(): Int {

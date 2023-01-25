@@ -1,5 +1,6 @@
 package com.example.hottakesapp.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,23 +22,30 @@ class AddFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        //TODO need to delete and add id from sharedpreferences
-        //TODO add logic for sign in/up before adding take
-        val userid = "63a663710ca1ef4a9ce6eb14"
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+        val userid = sharedPref?.getString("id",null)
 
         val textin: EditText = getView()?.findViewById(R.id.editTextTextPersonName2) ?: EditText(context)
 
         val button = getView()?.findViewById(R.id.button)?: Button(context)
         button.setOnClickListener{
-            post(userid,textin.text.toString())
-            //TODO add better notification here!!
-            //TODO (maybe) return to home screen
-            val text = "Take was added!"
-            val duration = Toast.LENGTH_SHORT
+            if (userid != null) {
+                    if (textin.text.isNotEmpty()) {
+                        post(userid, textin.text.toString())
+                        val text = "Take was added!"
+                        val duration = Toast.LENGTH_SHORT
 
-            val toast = Toast.makeText(context, text, duration)
-            toast.show()
+                        val toast = Toast.makeText(context, text, duration)
+                        toast.show()
+                    }
+            }
+            else{
+                val text = "Sign In Before Adding A Take!"
+                val duration = Toast.LENGTH_SHORT
+
+                val toast = Toast.makeText(context, text, duration)
+                toast.show()
+            }
         }
 
     }
